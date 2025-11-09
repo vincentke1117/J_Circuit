@@ -1,0 +1,52 @@
+.node {
+  min-width: 160px;
+  border-radius: 8px;
+  border: 2px solid var(--node-accent, #2563eb);
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 12px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dark .node {
+  background: #1e293b;
+  color: #f8fafc;
+}
+
+.title {
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.parameters {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.parameterRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+}
+
+.parameterUnit {
+  color: #64748b;
+}
+
+.handleLabel {
+  position: absolute;
+  transform: translate(-50%, -150%);
+  font-size: 10px;
+  pointer-events: none;
+}
+
+.handleWrapper {
+  position: relative;
+}

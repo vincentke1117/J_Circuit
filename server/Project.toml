@@ -1,0 +1,23 @@
+name = "JCircuitServer"
+uuid = "7ef02f30-0c8d-4cd6-8a41-e27378f8332e"
+authors = ["J-Circuit Team"]
+version = "0.1.0"
+
+[deps]
+DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
+Genie = "c43c736e-a2d1-11e8-161f-af95117fbd1e"
+HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
+ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
+ModelingToolkitStandardLibrary = "16a59e39-46ab-5aa3-aff8-30ba4c1bddbf"
+StructTypes = "856f2bd8-1eba-54ab-a9cc-336f4c8eb5c6"
+
+[compat]
+DifferentialEquations = "7"
+Genie = "5"
+HTTP = "1"
+JSON3 = "1"
+ModelingToolkit = "9"
+ModelingToolkitStandardLibrary = "2"
+StructTypes = "1"
+julia = "1.10"
