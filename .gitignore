@@ -1,0 +1,7 @@
+/node_modules
+/web/node_modules
+/web/dist
+/web/coverage
+/web/.vite
+/server/Manifest.toml
+/.DS_Store
