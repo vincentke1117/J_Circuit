@@ -11,12 +11,30 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
-  test: {
-    environment: 'jsdom',
-    globals: true,
-    setupFiles: './vitest.setup.ts',
-    coverage: {
-      reporter: ['text', 'lcov'],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          ui: ['@headlessui/react', '@radix-ui/react-dialog', '@radix-ui/react-label', '@radix-ui/react-slot'],
+          motion: ['framer-motion'],
+        },
+      },
     },
+    target: 'es2020',
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
+  },
+  server: {
+    port: 3000,
+    open: true,
+  },
+  preview: {
+    port: 4173,
   },
 })

@@ -1,0 +1,204 @@
+{
+  "nodes": [
+    {
+      "id": "V2",
+      "type": "vsource_dc",
+      "position": {
+        "x": 173.7563548281305,
+        "y": 439.65259099497536
+      },
+      "data": {
+        "label": "V2",
+        "type": "vsource_dc",
+        "parameters": {
+          "dc": 10
+        },
+        "rotation": 0,
+        "voltage": 0
+      }
+    },
+    {
+      "id": "G2",
+      "type": "ground",
+      "position": {
+        "x": 534.7317594323827,
+        "y": 577.5589998208882
+      },
+      "data": {
+        "label": "G2",
+        "type": "ground",
+        "parameters": {},
+        "rotation": 0,
+        "voltage": 0
+      }
+    },
+    {
+      "id": "R2",
+      "type": "resistor",
+      "position": {
+        "x": 297.6490022350326,
+        "y": 248.95549222153528
+      },
+      "data": {
+        "label": "R2",
+        "type": "resistor",
+        "parameters": {
+          "value": 5
+        },
+        "voltage": 4.94736842105263
+      }
+    },
+    {
+      "id": "R4",
+      "type": "resistor",
+      "position": {
+        "x": 557.1206574304075,
+        "y": 249.53895340969905
+      },
+      "data": {
+        "label": "R4",
+        "type": "resistor",
+        "parameters": {
+          "value": 5
+        },
+        "voltage": 3.9999999999999982
+      }
+    },
+    {
+      "id": "R6",
+      "type": "resistor",
+      "position": {
+        "x": 548.2875798067353,
+        "y": 67.46335042264266
+      },
+      "data": {
+        "label": "R6",
+        "type": "resistor",
+        "parameters": {
+          "value": 7
+        },
+        "voltage": 3.9999999999999982
+      }
+    },
+    {
+      "id": "R8",
+      "type": "resistor",
+      "position": {
+        "x": 295.4407328291145,
+        "y": 67.87740093625233
+      },
+      "data": {
+        "label": "R8",
+        "type": "resistor",
+        "parameters": {
+          "value": 3
+        },
+        "voltage": 4.94736842105263
+      }
+    },
+    {
+      "id": "R10",
+      "type": "resistor",
+      "position": {
+        "x": 852.8215112561569,
+        "y": 159.20766575365377
+      },
+      "data": {
+        "label": "R10",
+        "type": "resistor",
+        "parameters": {
+          "value": 5
+        },
+        "voltage": 0
+      }
+    },
+    {
+      "id": "R12",
+      "type": "resistor",
+      "position": {
+        "x": 44.80215525741184,
+        "y": 186.01981415286988
+      },
+      "data": {
+        "label": "R12",
+        "type": "resistor",
+        "parameters": {
+          "value": 10
+        },
+        "voltage": 10
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "xy-edge__V2neg-G2gnd",
+      "source": "V2",
+      "target": "G2",
+      "sourceHandle": "neg",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "xy-edge__V2pos-R12p",
+      "source": "V2",
+      "target": "R12",
+      "sourceHandle": "pos",
+      "targetHandle": "p"
+    },
+    {
+      "id": "xy-edge__R12n-R2p",
+      "source": "R12",
+      "target": "R2",
+      "sourceHandle": "n",
+      "targetHandle": "p"
+    },
+    {
+      "id": "xy-edge__R8p-R12n",
+      "source": "R8",
+      "target": "R12",
+      "sourceHandle": "p",
+      "targetHandle": "n"
+    },
+    {
+      "id": "xy-edge__R8n-R6p",
+      "source": "R8",
+      "target": "R6",
+      "sourceHandle": "n",
+      "targetHandle": "p"
+    },
+    {
+      "id": "xy-edge__R2n-R4p",
+      "source": "R2",
+      "target": "R4",
+      "sourceHandle": "n",
+      "targetHandle": "p"
+    },
+    {
+      "id": "xy-edge__R6n-R10p",
+      "source": "R6",
+      "target": "R10",
+      "sourceHandle": "n",
+      "targetHandle": "p"
+    },
+    {
+      "id": "xy-edge__R4n-R10p",
+      "source": "R4",
+      "target": "R10",
+      "sourceHandle": "n",
+      "targetHandle": "p"
+    },
+    {
+      "id": "xy-edge__R8n-R2n",
+      "source": "R8",
+      "target": "R2",
+      "sourceHandle": "n",
+      "targetHandle": "n"
+    },
+    {
+      "id": "xy-edge__R10n-G2gnd",
+      "source": "R10",
+      "target": "G2",
+      "sourceHandle": "n",
+      "targetHandle": "gnd"
+    }
+  ]
+}

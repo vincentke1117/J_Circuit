@@ -1,5 +1,6 @@
 using Test
 using JCircuitServer
+using JCircuitServer: ComponentPayload, NetPayload, SimulationSettings, SimulationPayload
 
 @testset "bootstrap" begin
     config = bootstrap(start = false)
@@ -31,6 +32,25 @@ end
     data = result["data"]
     @test length(data["time"]) == payload.sim.n_samples
     @test length(data["signals"]) == 1
+end
+
+@testset "node_voltage branch_currents" begin
+    components = [
+        ComponentPayload("V1", "vsource_dc", Dict("dc" => 10.0), Dict("pos" => "n1", "neg" => "gnd")),
+        ComponentPayload("R1", "resistor", Dict("value" => 1000.0), Dict("p" => "n1", "n" => "gnd")),
+        ComponentPayload("G1", "ground", Dict{String, Float64}(), Dict("gnd" => "gnd")),
+        ComponentPayload("A1", "current_probe", Dict{String, Float64}(), Dict("p" => "n1", "n" => "gnd")),
+    ]
+    nets = [
+        NetPayload("n1", [["V1", "pos"], ["R1", "p"], ["A1", "p"]]),
+        NetPayload("gnd", [["V1", "neg"], ["R1", "n"], ["G1", "gnd"], ["A1", "n"]]),
+    ]
+    payload = SimulationPayload(components, nets, SimulationSettings(1e-3, 10), "node_voltage", nothing, nothing)
+    result = run_simulation(payload)
+    @test result["status"] == "ok"
+    data = result["data"]
+    @test haskey(data, "branch_currents")
+    @test abs(data["branch_currents"]["R1"] - 0.01) < 1e-6
 end
 
 @testset "validation" begin

@@ -51,3 +51,35 @@
   font-size: 12px;
   color: #475569;
 }
+
+.sectionTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.hint {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.handleList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.handleItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.handleId {
+  font-size: 12px;
+  font-weight: 600;
+  color: #0f172a;
+}

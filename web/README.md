@@ -1,52 +1,93 @@
-# J-Circuit Web 前端
+# J-Circuit - 交互式电路仿真编辑器
 
-J-Circuit 前端基于 React 18、TypeScript 与 React Flow 构建，用于提供电路绘制、参数管理与仿真可视化界面。本目录由 Vite 驱动，支持快速开发与热更新。
+中文 | [English](./README.en.md)
 
-## 快速开始
+一个基于浏览器的电路仿真编辑器，支持常见电路分析方法、瞬态仿真、开关多场景预计算与结果快速切换、节点/元件电压覆盖显示以及支路电流可视化。
 
-```bash
-npm install
-npm run dev
+## 主要特性
+
+- 电路编辑器：拖拽元件、严格端口连接、支持旋转与参数编辑
+- 仿真方法：节点电压法、支路电流法、网孔电流法、戴维南等效、瞬态分析
+- 开关元件：自动预计算“闭合/断开”两种状态，点击开关即可零延迟切换显示
+- 结果面板：显示结果表格/波形，支持导出 `JSON`/`CSV`
+- 电压显示模式：支持“节点电压”与“元件电压”两种覆盖模式
+- 支路电流显示：可在顶栏切换是否在电路图上显示各支路电流
+- 快捷键：`Ctrl+R` 运行仿真，`Ctrl+Shift+R` 显示/隐藏结果面板
+
+## 技术栈
+
+- 前端：`React 19`、`TypeScript`、`Vite`、`@xyflow/react`、`framer-motion`、`react-plotly.js`
+- 后端：`Julia`（JCircuitServer），HTTP 接口提供仿真服务
+
+## 快速开始（Windows）
+
+1. 安装依赖
+   - 安装 Node.js（≥ 18）
+   - 安装 Julia（≥ 1.9）
+2. 启动后端（根目录）
+   ```powershell
+   julia --project=server server/start_server.jl
+   ```
+3. 启动前端（`web` 目录）
+   ```powershell
+   npm install
+   npm run dev
+   ```
+4. 打开编辑器
+   - 浏览器访问 `http://localhost:3000/editor`
+
+## 环境变量
+
+- `VITE_API_BASE_URL`：后端服务地址，缺省为 `http://localhost:8080`
+
+## 使用说明
+
+- 画布编辑：从左侧组件面板拖拽元件到画布，按端口提示连接，添加 `ground` 后可运行
+- 顶栏设置：
+  - 分析方法选择（节点电压/支路电流/网孔电流/戴维南/瞬态）
+  - 瞬态参数设置：`时间 tStop`、`采样点数 nSamples`
+  - 电压显示模式：`node` 或 `element`
+  - 支路电流显示切换：显示/隐藏普通元件上的支路电流
+- 开关交互：首次仿真会预计算所有开关状态；点击开关即可从缓存切换显示，无需重新仿真
+- 结果面板：根据方法显示相应结果，支持导出 `JSON`/`CSV`
+
+## 目录结构（关键部分）
+
 ```
-
-- 开发服务器默认运行在 `http://localhost:5173/`；
-- 拖拽左侧元件库中的元件即可在画布中生成自定义节点；
-- 选中元件后可在右侧属性面板调整参数，底部面板可设置仿真时长与采样点数；
-- 若电路中尚未包含地 (Ground)，“运行仿真”按钮会自动禁用，并在运行前进行额外校验；
-- 可通过工具栏导入/导出当前工程（`nodes[]` + `edges[]` JSON）。
-
-## 可用脚本
-
-| 命令                | 说明                     |
-| ------------------- | ------------------------ |
-| `npm run dev`       | 启动开发服务器           |
-| `npm run build`     | 产出生产构建             |
-| `npm run lint`      | ESLint 代码质量检查      |
-| `npm run typecheck` | TypeScript 类型检查      |
-| `npm run test`      | 使用 Vitest 运行单元测试 |
-
-## 目录结构
-
-```text
+server/                      # Julia 仿真服务
 web/
-├─ index.html
-├─ package.json
-├─ src/
-│  ├─ app/                # 应用框架与入口
-│  ├─ canvas/             # React Flow 自定义节点实现
-│  ├─ circuit/            # 元件库与拖拽常量
-│  ├─ palette/            # 左侧元件面板
-│  ├─ panels/             # 属性面板
-│  ├─ simulation/         # 仿真参数、API 与结果面板
-│  ├─ types/              # 共享 TypeScript 类型
-│  └─ workspace/          # 画布布局、项目导入导出与状态管理
-└─ vitest.setup.ts
+  ├── src/
+  │   ├── workspace/         # 编辑器工作区与顶栏
+  │   ├── simulation/        # 仿真请求、结果面板、映射与载荷构建
+  │   ├── canvas/            # 画布节点、连线类型
+  │   ├── circuit/           # 元件库与图标
+  │   ├── pages/Editor.tsx   # 路由入口页（仅保留编辑器）
+  │   ├── types/             # 类型定义
+  │   └── utils/             # 工具函数
+  ├── index.html             # 前端入口
+  ├── package.json           # 前端依赖与脚本
+  └── vite.config.ts         # Vite 配置
 ```
 
-## 已实现功能
+## 常见问题
 
-- 画布连线规则校验（禁止自连、缺少端子提示、地线检测）；
-- 将画布状态转换为统一仿真载荷 JSON，包含组件参数与网络拓扑；
-- 集成 `POST /simulate` 调用，支持仿真中/失败时的 UI 提示；
-- Plotly.js 多波形可视化，支持同时显示多个探针信号；
-- Vitest 单元测试覆盖载荷构建与异常分支。
+- 后端未就绪：主页健康检查/指标请求报错可忽略，待后端启动后刷新即可
+- 浏览器扩展触发的跨域请求报错（如 `h.trace.qq.com`）：与本项目无关，可忽略
+- 字体 CDN 加载超时：不影响功能，可忽略或换用本地字体
+
+## 构建与预览
+
+```powershell
+npm run build
+npm run preview
+```
+
+## 维护说明
+
+- 已移除登录/注册/营销页面与测试文件，聚焦编辑器与仿真功能
+- 路由仅保留 `"/editor"`，`"/"` 重定向到编辑器页
+
+## 许可证与贡献
+
+- 许可证：Apache License 2.0（见仓库根目录 `LICENSE`）
+- 欢迎提交 Issue 和 Pull Request

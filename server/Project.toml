@@ -1,23 +1,30 @@
 name = "JCircuitServer"
 uuid = "7ef02f30-0c8d-4cd6-8a41-e27378f8332e"
-authors = ["J-Circuit Team"]
 version = "0.1.0"
+authors = ["J-Circuit Team"]
 
 [deps]
 DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
-Genie = "c43c736e-a2d1-11e8-161f-af95117fbd1e"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
-ModelingToolkitStandardLibrary = "16a59e39-46ab-5aa3-aff8-30ba4c1bddbf"
-StructTypes = "856f2bd8-1eba-54ab-a9cc-336f4c8eb5c6"
+ModelingToolkitStandardLibrary = "16a59e39-deab-5bd0-87e4-056b12336739"
+Modia = "cb905087-75eb-5f27-8515-1ce0ec8e839e"
+StructTypes = "856f2bd8-1eba-4b0a-8007-ebc267875bd4"
 
 [compat]
 DifferentialEquations = "7"
-Genie = "5"
 HTTP = "1"
 JSON3 = "1"
 ModelingToolkit = "9"
 ModelingToolkitStandardLibrary = "2"
+Modia = "0.12.0"
 StructTypes = "1"
 julia = "1.10"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]

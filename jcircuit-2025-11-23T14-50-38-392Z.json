@@ -1,0 +1,179 @@
+{
+  "nodes": [
+    {
+      "id": "GCS1",
+      "type": "vccs",
+      "position": {
+        "x": 527.4684021933373,
+        "y": -94.09658505294594
+      },
+      "data": {
+        "label": "GCS1",
+        "type": "vccs",
+        "parameters": {
+          "gain": 0.01
+        }
+      }
+    },
+    {
+      "id": "R1",
+      "type": "resistor",
+      "position": {
+        "x": 245.71282920561163,
+        "y": 153.01792616611965
+      },
+      "data": {
+        "label": "R1",
+        "type": "resistor",
+        "parameters": {
+          "value": 10
+        }
+      }
+    },
+    {
+      "id": "R2",
+      "type": "resistor",
+      "position": {
+        "x": 229.7052589502407,
+        "y": -36.854109729856255
+      },
+      "data": {
+        "label": "R2",
+        "type": "resistor",
+        "parameters": {
+          "value": 10
+        }
+      }
+    },
+    {
+      "id": "R3",
+      "type": "resistor",
+      "position": {
+        "x": 579.4675476646188,
+        "y": 173.89140771033505
+      },
+      "data": {
+        "label": "R3",
+        "type": "resistor",
+        "parameters": {
+          "value": 10
+        }
+      }
+    },
+    {
+      "id": "R4",
+      "type": "resistor",
+      "position": {
+        "x": 851.3460943135665,
+        "y": 167.2241468397565
+      },
+      "data": {
+        "label": "R4",
+        "type": "resistor",
+        "parameters": {
+          "value": 10
+        }
+      }
+    },
+    {
+      "id": "V1",
+      "type": "vsource_dc",
+      "position": {
+        "x": 157.80553953228517,
+        "y": 328.3095345463411
+      },
+      "data": {
+        "label": "V1",
+        "type": "vsource_dc",
+        "parameters": {
+          "dc": 5
+        }
+      }
+    },
+    {
+      "id": "G1",
+      "type": "ground",
+      "position": {
+        "x": 634.1324574043891,
+        "y": 440.11617443271916
+      },
+      "data": {
+        "label": "G1",
+        "type": "ground",
+        "parameters": {}
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "xy-edge__V1pos-R1p",
+      "source": "V1",
+      "target": "R1",
+      "sourceHandle": "pos",
+      "targetHandle": "p"
+    },
+    {
+      "id": "xy-edge__R1p-R2p",
+      "source": "R1",
+      "target": "R2",
+      "sourceHandle": "p",
+      "targetHandle": "p"
+    },
+    {
+      "id": "xy-edge__R1n-R3p",
+      "source": "R1",
+      "target": "R3",
+      "sourceHandle": "n",
+      "targetHandle": "p"
+    },
+    {
+      "id": "xy-edge__R3n-R4p",
+      "source": "R3",
+      "target": "R4",
+      "sourceHandle": "n",
+      "targetHandle": "p"
+    },
+    {
+      "id": "xy-edge__R4n-G1gnd",
+      "source": "R4",
+      "target": "G1",
+      "sourceHandle": "n",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "xy-edge__V1neg-G1gnd",
+      "source": "V1",
+      "target": "G1",
+      "sourceHandle": "neg",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "xy-edge__R2n-GCS1pos",
+      "source": "R2",
+      "target": "GCS1",
+      "sourceHandle": "n",
+      "targetHandle": "pos"
+    },
+    {
+      "id": "xy-edge__GCS1neg-R4n",
+      "source": "GCS1",
+      "target": "R4",
+      "sourceHandle": "neg",
+      "targetHandle": "n"
+    },
+    {
+      "id": "xy-edge__R3p-GCS1ctrl_p",
+      "source": "R3",
+      "target": "GCS1",
+      "sourceHandle": "p",
+      "targetHandle": "ctrl_p"
+    },
+    {
+      "id": "xy-edge__R3n-GCS1ctrl_n",
+      "source": "R3",
+      "target": "GCS1",
+      "sourceHandle": "n",
+      "targetHandle": "ctrl_n"
+    }
+  ]
+}

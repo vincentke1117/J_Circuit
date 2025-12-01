@@ -1,0 +1,154 @@
+{
+  "nodes": [
+    {
+      "id": "V2",
+      "type": "vsource_dc",
+      "position": {
+        "x": 211.58789819383688,
+        "y": 435.4872028766137
+      },
+      "data": {
+        "label": "V2",
+        "type": "vsource_dc",
+        "parameters": {
+          "dc": 5
+        }
+      }
+    },
+    {
+      "id": "R1",
+      "type": "resistor",
+      "position": {
+        "x": 370.3333333333333,
+        "y": 162.33333333333334
+      },
+      "data": {
+        "label": "R1",
+        "type": "resistor",
+        "parameters": {
+          "value": 1000
+        }
+      }
+    },
+    {
+      "id": "G2",
+      "type": "ground",
+      "position": {
+        "x": 525.3984260990494,
+        "y": 562.8923331542215
+      },
+      "data": {
+        "label": "G2",
+        "type": "ground",
+        "parameters": {}
+      }
+    },
+    {
+      "id": "IP1",
+      "type": "current_probe",
+      "position": {
+        "x": 575.6666666666666,
+        "y": 164.33333333333334
+      },
+      "data": {
+        "label": "IP1",
+        "type": "current_probe",
+        "parameters": {}
+      }
+    },
+    {
+      "id": "C1",
+      "type": "capacitor",
+      "position": {
+        "x": 784.6719381690316,
+        "y": 194.37784111179835
+      },
+      "data": {
+        "label": "C1",
+        "type": "capacitor",
+        "parameters": {
+          "value": 0.000001
+        }
+      }
+    },
+    {
+      "id": "L1",
+      "type": "inductor",
+      "position": {
+        "x": 79.0303310491422,
+        "y": 153.63425395880753
+      },
+      "data": {
+        "label": "L1",
+        "type": "inductor",
+        "parameters": {
+          "value": 0.001
+        }
+      }
+    },
+    {
+      "id": "VP1",
+      "type": "voltage_probe",
+      "position": {
+        "x": 435.5833716002005,
+        "y": 339.74847191567545
+      },
+      "data": {
+        "label": "VP1",
+        "type": "voltage_probe",
+        "parameters": {}
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "xy-edge__R1n-IP1p",
+      "source": "R1",
+      "target": "IP1",
+      "sourceHandle": "n",
+      "targetHandle": "p"
+    },
+    {
+      "id": "xy-edge__IP1n-C1p",
+      "source": "IP1",
+      "target": "C1",
+      "sourceHandle": "n",
+      "targetHandle": "p"
+    },
+    {
+      "id": "xy-edge__L1n-R1p",
+      "source": "L1",
+      "target": "R1",
+      "sourceHandle": "n",
+      "targetHandle": "p"
+    },
+    {
+      "id": "xy-edge__V2pos-L1p",
+      "source": "V2",
+      "target": "L1",
+      "sourceHandle": "pos",
+      "targetHandle": "p"
+    },
+    {
+      "id": "xy-edge__V2neg-G2gnd",
+      "source": "V2",
+      "target": "G2",
+      "sourceHandle": "neg",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "xy-edge__C1n-G2gnd",
+      "source": "C1",
+      "target": "G2",
+      "sourceHandle": "n",
+      "targetHandle": "gnd"
+    },
+    {
+      "id": "xy-edge__VP1node-IP1p",
+      "source": "VP1",
+      "target": "IP1",
+      "sourceHandle": "node",
+      "targetHandle": "p"
+    }
+  ]
+}

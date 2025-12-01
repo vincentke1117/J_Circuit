@@ -30,5 +30,5 @@ The following tasks translate the PRD into actionable work. Complete them roughl
 ## 6. Quality & Delivery
 - [x] Write automated tests (frontend unit/integration, backend unit/integration, at least one end-to-end contract test).
 - [x] Update documentation (`README.md`, `docs/`) to describe setup, workflow, and limitations.
-- [ ] Prepare release notes summarizing v1.2 capabilities and known constraints.
+- [x] Prepare release notes summarizing v1.2 capabilities and known constraints.
 

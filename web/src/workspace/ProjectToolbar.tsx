@@ -7,9 +7,10 @@ export interface ProjectToolbarProps {
   onImport: (content: string) => Promise<void> | void
   onImportError?: (message: string) => void
   canExport: boolean
+  onReset?: () => void  // 新增：重置电路
 }
 
-export function ProjectToolbar({ onExport, onImport, onImportError, canExport }: ProjectToolbarProps) {
+export function ProjectToolbar({ onExport, onImport, onImportError, canExport, onReset }: ProjectToolbarProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const handleImportClick = () => {
@@ -50,6 +51,11 @@ export function ProjectToolbar({ onExport, onImport, onImportError, canExport }:
       <button type="button" className={styles.button} onClick={onExport} disabled={!canExport}>
         导出项目
       </button>
+      {onReset && (
+        <button type="button" className={styles.button} onClick={onReset}>
+          重置电路
+        </button>
+      )}
       <input
         ref={fileInputRef}
         className={styles.input}

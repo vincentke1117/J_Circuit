@@ -57,9 +57,7 @@ function validateProjectEdge(edge: unknown): edge is CircuitProjectEdge {
     typeof edge.source === 'string' &&
     typeof edge.target === 'string' &&
     typeof edge.sourceHandle === 'string' &&
-    edge.sourceHandle.length > 0 &&
-    typeof edge.targetHandle === 'string' &&
-    edge.targetHandle.length > 0
+    typeof edge.targetHandle === 'string'
   )
 }
 
@@ -76,6 +74,7 @@ export function loadProjectFromObject(project: unknown): LoadProjectResult {
   }
 
   const nodes: Node<CircuitNodeData>[] = []
+  const idToType: Record<string, string> = {}
   const edges: Edge[] = []
   const errors: string[] = []
 
@@ -99,16 +98,20 @@ export function loadProjectFromObject(project: unknown): LoadProjectResult {
         : parameter.defaultValue ?? 0
     }
 
+    const nodeData = rawNode.data as CircuitNodeData
     nodes.push({
       id: rawNode.id,
       type: rawNode.type,
       position: { x: rawNode.position.x, y: rawNode.position.y },
       data: {
-        label: typeof rawNode.data.label === 'string' ? rawNode.data.label : rawNode.id,
+        label: typeof nodeData.label === 'string' ? nodeData.label : rawNode.id,
         type: rawNode.type,
         parameters,
+        rotation: typeof nodeData.rotation === 'number' ? nodeData.rotation : 0,
+        fontSize: typeof nodeData.fontSize === 'number' ? nodeData.fontSize : undefined,
       },
     })
+    idToType[rawNode.id] = rawNode.type as string
   }
 
   for (const rawEdge of rawEdges) {
@@ -116,12 +119,26 @@ export function loadProjectFromObject(project: unknown): LoadProjectResult {
       errors.push('存在非法的连线数据')
       continue
     }
+    const srcType = idToType[rawEdge.source]
+    const tgtType = idToType[rawEdge.target]
+    const srcDef = srcType ? circuitComponentLibrary[srcType as keyof typeof circuitComponentLibrary] : undefined
+    const tgtDef = tgtType ? circuitComponentLibrary[tgtType as keyof typeof circuitComponentLibrary] : undefined
+    const sourceHandle = (typeof rawEdge.sourceHandle === 'string' && rawEdge.sourceHandle.length > 0)
+      ? rawEdge.sourceHandle
+      : (srcDef?.handles[0]?.id ?? '')
+    const targetHandle = (typeof rawEdge.targetHandle === 'string' && rawEdge.targetHandle.length > 0)
+      ? rawEdge.targetHandle
+      : (tgtDef?.handles[0]?.id ?? '')
+    if (!sourceHandle || !targetHandle) {
+      errors.push(`连线 ${rawEdge.id} 的端口缺失且无法推断`)
+      continue
+    }
     edges.push({
       id: rawEdge.id,
       source: rawEdge.source,
       target: rawEdge.target,
-      sourceHandle: rawEdge.sourceHandle,
-      targetHandle: rawEdge.targetHandle,
+      sourceHandle,
+      targetHandle,
     })
   }
 
