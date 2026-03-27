@@ -9,10 +9,11 @@ export interface ExampleCircuit {
 }
 
 export async function loadExamples(): Promise<ExampleCircuit[]> {
-  const [voltageDividerData, rlcSeriesData, wheatstoneBridgeData] = await Promise.all([
+  const [voltageDividerData, rlcSeriesData, wheatstoneBridgeData, controlStepResponseData] = await Promise.all([
     import('./data/voltage-divider.json'),
     import('./data/rlc-series.json'),
     import('./data/wheatstone-bridge.json'),
+    import('./data/control-step-response.json'),
   ])
   return [
     {
@@ -32,6 +33,12 @@ export async function loadExamples(): Promise<ExampleCircuit[]> {
       title: 'Wheatstone Bridge',
       description: 'A bridge circuit used to measure an unknown electrical resistance by balancing two legs of a bridge circuit.',
       data: wheatstoneBridgeData.default as unknown as CircuitProject,
+    },
+    {
+      id: 'control-step-response',
+      title: 'Control Step Response',
+      description: 'A control-only step -> gain -> first-order plant -> scope diagram for Phase 1 control simulation.',
+      data: controlStepResponseData.default as unknown as CircuitProject,
     },
   ]
 }

@@ -62,5 +62,7 @@ end
     ], SimulationSettings(1e-3, 10))
     result = run_simulation(payload)
     @test result["status"] == "error"
-    @test occursin("ground", result["message"])
+    @test occursin("ground", result["message"]) || occursin("地线", result["message"])
 end
+
+include("control_simulation.jl")

@@ -1,6 +1,5 @@
 import { useRef, type ChangeEvent } from 'react'
 import { 
-  FileJson, 
   Upload, 
   Download, 
   RotateCcw, 
@@ -12,6 +11,7 @@ import {
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { SimulationSettings, AnalysisMethod, TheveninPortConfig } from '@/types/circuit'
+import type { DiagramMode } from '@/types/control'
 
 // 分析方法显示名称
 const ANALYSIS_METHOD_LABELS: Record<AnalysisMethod, string> = {
@@ -38,6 +38,7 @@ export interface EditorTopBarProps {
   disabled?: boolean
   isRunning?: boolean
   isResistive?: boolean
+  diagramMode?: DiagramMode
   hasResult?: boolean
   onShowResult?: () => void
   showResultPanel?: boolean
@@ -63,6 +64,7 @@ export function EditorTopBar({
   disabled,
   isRunning,
   isResistive,
+  diagramMode,
   hasResult,
   onShowResult,
   showResultPanel,
@@ -104,14 +106,18 @@ export function EditorTopBar({
   }
 
   // 根据电路类型可用的分析方法
-  const availableMethods: AnalysisMethod[] = isResistive
-    ? ['node_voltage', 'branch_current', 'mesh_current', 'thevenin', 'transient', 'transient_modia']
-    : ['transient', 'transient_modia']
+  const availableMethods: AnalysisMethod[] = diagramMode === 'control'
+    ? ['transient']
+    : isResistive
+      ? ['node_voltage', 'branch_current', 'mesh_current', 'thevenin', 'transient', 'transient_modia']
+      : ['transient', 'transient_modia']
   
-  const currentMethod = settings.method ?? 'transient'
+  const currentMethod: AnalysisMethod = diagramMode === 'control'
+    ? 'transient'
+    : settings.method ?? 'transient'
   const isTransient = currentMethod === 'transient' || currentMethod === 'transient_modia'
-  const showTheveninConfig = currentMethod === 'thevenin'
-  const showTeachingMode = isResistive && (currentMethod !== 'thevenin' && currentMethod !== 'transient' || (settings.comparisonMethods?.length ?? 0) > 0)
+  const showTheveninConfig = diagramMode !== 'control' && currentMethod === 'thevenin'
+  const showTeachingMode = diagramMode !== 'control' && isResistive && (currentMethod !== 'thevenin' && currentMethod !== 'transient' || (settings.comparisonMethods?.length ?? 0) > 0)
 
   return (
     <header className="min-h-14 h-auto py-2 bg-slate-900 border-b border-slate-800 flex flex-wrap items-center justify-between px-4 shrink-0 z-10 gap-y-2">

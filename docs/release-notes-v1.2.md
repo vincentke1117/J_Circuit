@@ -42,3 +42,16 @@
 - 前端：`web/` 目录安装依赖后运行 `npm run dev`。
 - 后端：`server/` 目录安装 Julia 依赖后运行服务脚本。
 - 通过工作区的控制面板选择方法、设置 `tStop` 与 `nSamples`，运行并查看结果。
+
+## v1.2 后续扩展：控制系统 Phase 1
+
+- 新增 control-only 仿真分支（`kind = "control"`），并保持 `/simulate` 统一入口。
+- 新增控制元件：
+  - `control_step`, `control_constant`, `control_sum`, `control_gain`
+  - `control_integrator`, `control_plant_1st`, `control_pid`, `control_scope`
+- 前端新增控制图 payload 构建与模式检测：`empty | electrical | control | mixed`。
+- 后端新增控制 payload 校验与时域求解，输出格式复用 `time + signals`，可直接复用现有结果面板。
+- 当前限制：
+  - 不支持控制图与电路图混合联立求解；
+  - 纯代数环会被拒绝；
+  - 控制分支仅支持时域仿真。

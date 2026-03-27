@@ -1,8 +1,12 @@
 import { Position } from '@xyflow/react'
 
+import type { ControlComponentType } from '@/types/control'
+import { controlComponentLibrary } from './controlComponents'
+import type { CircuitComponentDefinition } from './componentSchema'
+
 export const DND_COMPONENT_MIME = 'application/x-jcircuit-component'
 
-export type CircuitComponentType =
+export type ElectricalComponentType =
   | 'resistor'
   | 'capacitor'
   | 'inductor'
@@ -19,36 +23,11 @@ export type CircuitComponentType =
   | 'current_probe'
   | 'switch'
 
-export interface CircuitComponentHandle {
-  id: string
-  position: Position
-  label?: string
-  // 连接说明：该端子如何使用、连接到哪里
-  hint?: string
-}
+export type CircuitComponentType = ElectricalComponentType | ControlComponentType
 
-export interface CircuitComponentParameter {
-  key: string
-  label: string
-  unit?: string
-  defaultValue?: number
-  min?: number
-  // 参数说明：含义、使用建议或注意事项
-  description?: string
-}
+export type { CircuitComponentDefinition, CircuitComponentHandle, CircuitComponentParameter } from './componentSchema'
 
-export interface CircuitComponentDefinition {
-  type: CircuitComponentType
-  label: string
-  prefix: string
-  accent: string
-  handles: CircuitComponentHandle[]
-  parameters: CircuitComponentParameter[]
-  // 元件总体说明：用途、行为或注意事项
-  description?: string
-}
-
-export const circuitComponentLibrary: Record<CircuitComponentType, CircuitComponentDefinition> = {
+const electricalComponentLibrary: Record<ElectricalComponentType, CircuitComponentDefinition<ElectricalComponentType>> = {
   resistor: {
     type: 'resistor',
     label: '电阻',
@@ -257,6 +236,11 @@ export const circuitComponentLibrary: Record<CircuitComponentType, CircuitCompon
       { key: 'gain', label: '电流增益', unit: '', defaultValue: 1, description: '无量纲，输出/参考电流比（A/A）。' },
     ],
   },
+}
+
+export const circuitComponentLibrary: Record<CircuitComponentType, CircuitComponentDefinition<CircuitComponentType>> = {
+  ...electricalComponentLibrary,
+  ...controlComponentLibrary,
 }
 
 export const circuitComponentList = Object.values(circuitComponentLibrary)

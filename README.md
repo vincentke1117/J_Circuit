@@ -7,6 +7,7 @@ J-Circuit 是一个基于 React 与 Julia 的交互式电路仿真平台。根�
 - **可视化电路绘制**：基于 React Flow 的拖拽式电路编辑器，支持元件旋转、连线重连、端口约束
 - **实时参数配置**：属性检查面板支持动态修改元件参数（电阻、电容、电感、电压源等）
 - **瞬态仿真**：Julia 后端使用 ModelingToolkit + DifferentialEquations 求解电路微分方程
+- **控制系统仿真（Phase 1）**：支持控制块信号流图（Step/Gain/PID/Plant/Scope）的时域仿真
 - **多信号波形展示**：Plotly 交互式图表，支持多探针信号同时显示、缩放、图例切换
 - **项目导入导出**：JSON 格式保存/加载电路拓扑与参数，支持版本控制与协作
 - **前后端校验**：双层验证机制确保电路合法性（地线检查、端子连接、参数范围等）
@@ -84,6 +85,19 @@ npm run test         # Vitest 单元测试
 | 电压探针 (voltage_probe) | VP | node | 无 |
 | 电流探针 (current_probe) | IP | p, n | 无 |
 
+控制系统组件（Phase 1）：
+
+| 元件类型 | 标识 | 端口 | 参数 |
+|---------|------|------|------|
+| 阶跃输入 (`control_step`) | STEP | out | amplitude, offset, startTime |
+| 常数源 (`control_constant`) | CONST | out | value |
+| 求和器 (`control_sum`) | SUM | in1, in2, out | sign1, sign2 |
+| 增益 (`control_gain`) | K | in, out | gain |
+| 积分器 (`control_integrator`) | INT | in, out | initialValue |
+| 一阶对象 (`control_plant_1st`) | PLANT | in, out | gain, timeConstant, initialValue |
+| PID (`control_pid`) | PID | in, out | kp, ki, kd, tf |
+| 示波器 (`control_scope`) | SCOPE | in | 无 |
+
 #### 3. 仿真控制 (`SimulationControls`)
 
 - **仿真时长** (`tStop`)：设置仿真终止时间（秒）
@@ -146,7 +160,12 @@ julia --project=server -e 'using JCircuitServer; bootstrap(start=false)'
 
 #### POST `/simulate`
 
-**请求格式** (`SimulationPayload`)：
+**请求格式**：
+
+- 电路仿真：`SimulationPayload`（`kind` 可省略或设为 `"circuit"`）
+- 控制仿真：`ControlSimulationPayload`（必须 `kind = "control"`）
+
+电路仿真示例（`SimulationPayload`）：
 
 ```json
 {
@@ -355,6 +374,7 @@ end
 ## 已知限制
 
 - 仅支持瞬态仿真（transient analysis），暂不支持 AC 分析或 DC 工作点
+- 控制系统分支当前仅支持 control-only 图；混合电路+控制图会被拒绝
 - 旋转功能仅支持 90° 步进（0°/90°/180°/270°）
 - 探针数量无硬性限制，但过多信号可能影响图表性能
 - 后端求解器固定为 Rodas5，暂不支持用户选择算法

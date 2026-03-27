@@ -34,6 +34,7 @@ import type {
   ComparisonResult,
   TheveninPortConfig,
 } from '@/types/circuit'
+import type { DiagramMode } from '@/types/control'
 import { nextComponentIdFromNodes } from '@/utils/id'
 import { ComponentPalette } from '@/palette/ComponentPalette'
 import { InspectorPanel } from '@/panels/InspectorPanel'
@@ -41,10 +42,13 @@ import { SimulationResultPanel } from '@/simulation/SimulationResultPanel'
 import { circuitNodeTypes } from '@/canvas/nodeTypes'
 import { StepBridgeEdge } from '@/canvas/StepBridgeEdge'
 import { buildSimulationPayload, isResistiveCircuit } from '@/simulation/payload'
+import { buildControlSimulationPayload } from '@/simulation/controlPayload'
+import { detectDiagramMode } from '@/simulation/diagramMode'
 import { runSimulationRequest } from '@/simulation/api'
 import { buildProjectSnapshot, loadProjectFromObject } from './project'
 import { applyOverlay } from '@/simulation/mapping'
 import { EditorTopBar } from './EditorTopBar'
+import { isRunDisabled } from '@/workspace/runGuard'
 
 import styles from './CircuitWorkspace.module.css'
 
@@ -83,16 +87,22 @@ const pickNodeVoltages = (data: AnalysisResultData): Record<string, number> | nu
   return null
 }
 
+const hasBranchCurrents = (value: unknown): value is { branch_currents: Record<string, number> } => {
+  if (!isRecord(value) || !('branch_currents' in value)) return false
+  const candidate = (value as Record<string, unknown>).branch_currents
+  return isRecord(candidate)
+}
+
 const pickBranchCurrents = (data: AnalysisResultData): Record<string, number> | null => {
   if (!data) return null
-  if ('branch_currents' in data && data.branch_currents) {
+  if (hasBranchCurrents(data)) {
     return data.branch_currents as Record<string, number>
   }
   if (isComparisonResult(data)) {
     const bc = data['branch_current']
     const mc = data['mesh_current']
-    if (bc && 'branch_currents' in bc) return (bc as any).branch_currents
-    if (mc && 'branch_currents' in mc) return (mc as any).branch_currents
+    if (hasBranchCurrents(bc)) return bc.branch_currents
+    if (hasBranchCurrents(mc)) return mc.branch_currents
     return null
   }
   return null
@@ -315,9 +325,11 @@ function CircuitWorkspaceInner() {
   }, [])
 
   const hasGround = useMemo(() => nodes.some((node) => node.type === 'ground'), [nodes])
+  const diagramMode = useMemo<DiagramMode>(() => detectDiagramMode(nodes as Node<CircuitNodeData>[]), [nodes])
   const canExport = nodes.length > 0
   const isResistive = useMemo(() => isResistiveCircuit(nodes as Node<CircuitNodeData>[]), [nodes])
   const hasResult = !!(simulationResult && !simulationError)
+  const runDisabled = isRunDisabled(diagramMode, hasGround)
 
   const handleExportProject = useCallback(() => {
     const snapshot = buildProjectSnapshot(reactFlow.getNodes() as Node<CircuitNodeData>[], reactFlow.getEdges())
@@ -430,11 +442,11 @@ function CircuitWorkspaceInner() {
   }, [edges, setNodes])
 
   const availableNodes = useMemo(() => {
-    if (simulationSettings.method !== 'thevenin') return []
+    if (diagramMode !== 'electrical' || simulationSettings.method !== 'thevenin') return []
     const build = buildSimulationPayload(nodes as Node<CircuitNodeData>[], edges, simulationSettings)
     if (!build.ok || !build.payload || !build.payload.nets) return []
     return build.payload.nets.map(n => n.name)
-  }, [nodes, edges, simulationSettings])
+  }, [nodes, edges, simulationSettings, diagramMode])
 
   const applyResultToOverlay = useCallback((data: AnalysisResultData, nets: SimulationNetPayload[]) => {
     try {
@@ -461,9 +473,12 @@ function CircuitWorkspaceInner() {
     const start = performance.now()
     const currentNodes = reactFlow.getNodes() as Node<CircuitNodeData>[]
     const currentEdges = reactFlow.getEdges()
+    const currentDiagramMode = detectDiagramMode(currentNodes)
     
     // 识别开关并检查是否启用多状态仿真
-    const switches = currentNodes.filter(n => n.type === 'switch').sort((a, b) => a.id.localeCompare(b.id))
+    const switches = currentDiagramMode === 'electrical'
+      ? currentNodes.filter(n => n.type === 'switch').sort((a, b) => a.id.localeCompare(b.id))
+      : []
     const isMultiScenario = switches.length > 0 && switches.length <= 4
 
     // 运行仿真前清除之前的电压显示
@@ -483,6 +498,41 @@ function CircuitWorkspaceInner() {
     setSimulationResultCache(null)
 
     try {
+      if (currentDiagramMode === 'empty') {
+        setSimulationResult(null)
+        setSimulationError('请先在画布中放置元件')
+        return
+      }
+
+      if (currentDiagramMode === 'mixed') {
+        setSimulationResult(null)
+        setSimulationError('当前画布包含电路元件和控制元件，Phase 1 暂不支持混合仿真')
+        return
+      }
+
+      if (currentDiagramMode === 'control') {
+        const buildControl = buildControlSimulationPayload(currentNodes, currentEdges, simulationSettings)
+        if (!buildControl.ok || !buildControl.payload) {
+          setSimulationResult(null)
+          setSimulationError(buildControl.errors.join('；'))
+          return
+        }
+
+        const response = await runSimulationRequest(buildControl.payload)
+        if (response.status === 'ok') {
+          setSimulationResult(response.data)
+          setSimulationError(null)
+          setSimulationResultCache(null)
+          setLastMethodUsed('transient')
+          setShowResultPanel(true)
+        } else {
+          const detail = response.data ? `（详情：${JSON.stringify(response.data)}）` : ''
+          setSimulationResult(null)
+          setSimulationError(`${response.message}${detail}`)
+        }
+        return
+      }
+
       if (isMultiScenario) {
          const combinations = 1 << switches.length
          const promises = []
@@ -591,11 +641,12 @@ function CircuitWorkspaceInner() {
       const latencyMs = Math.round(end - start)
       setWorkspaceMessage({ tone: 'info', text: `仿真往返时间 ${latencyMs}ms` })
     }
-  }, [reactFlow, simulationSettings, setNodes, teachingMode, theveninPort, updateVoltageOverlay, applyResultToOverlay])
+  }, [reactFlow, simulationSettings, setNodes, teachingMode, theveninPort, applyResultToOverlay])
 
   // 监听开关状态变化，应用缓存的仿真结果
   useEffect(() => {
     if (!simulationResultCache) return
+    if (detectDiagramMode(nodes as Node<CircuitNodeData>[]) !== 'electrical') return
     
     const signature = getSwitchStateSignature(nodes)
     if (!signature) return
@@ -664,9 +715,10 @@ function CircuitWorkspaceInner() {
           settings={simulationSettings}
           onSettingsChange={handleSimulationSettingsChange}
           onRun={handleRunSimulation}
-          disabled={!hasGround}
+          disabled={runDisabled}
           isRunning={isSimulating}
           isResistive={isResistive}
+          diagramMode={diagramMode}
           hasResult={hasResult}
           onShowResult={() => setShowResultPanel(true)}
           showResultPanel={showResultPanel}

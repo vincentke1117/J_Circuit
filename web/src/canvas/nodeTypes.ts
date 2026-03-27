@@ -18,4 +18,12 @@ export const circuitNodeTypes: NodeTypes = {
   voltage_probe: CircuitNode,
   current_probe: CircuitNode,
   switch: CircuitNode,
+  control_step: CircuitNode,
+  control_constant: CircuitNode,
+  control_sum: CircuitNode,
+  control_gain: CircuitNode,
+  control_integrator: CircuitNode,
+  control_plant_1st: CircuitNode,
+  control_pid: CircuitNode,
+  control_scope: CircuitNode,
 }

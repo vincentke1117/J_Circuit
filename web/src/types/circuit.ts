@@ -1,4 +1,5 @@
 import type { CircuitComponentType } from '@/circuit/components'
+import type { ControlSimulationPayload } from '@/types/control'
 
 // 分析方法枚举
 export type AnalysisMethod = 
@@ -77,6 +78,7 @@ export interface SimulationNetPayload {
 }
 
 export interface SimulationPayload {
+  kind?: 'circuit'
   components: SimulationComponentPayload[]
   nets: SimulationNetPayload[]
   sim: {
@@ -87,6 +89,8 @@ export interface SimulationPayload {
   thevenin_port?: { positive: string; negative: string }  // 戴维南端口（后端格式）
   teaching_mode?: boolean  // 教学模式
 }
+
+export type SimulationRequestPayload = SimulationPayload | ControlSimulationPayload
 
 export interface SimulationSignal {
   id: string

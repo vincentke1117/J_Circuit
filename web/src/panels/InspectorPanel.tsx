@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Settings2, RotateCw, Info, Link2 } from 'lucide-react'
+import { Settings2, RotateCw, Link2 } from 'lucide-react'
 import type { CircuitComponentDefinition } from '@/circuit/components'
 import type { CircuitNodeData } from '@/types/circuit'
 

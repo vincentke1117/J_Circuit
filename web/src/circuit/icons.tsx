@@ -217,8 +217,119 @@ export function IconSwitch({ size = 16, state = 0 }: IconProps & { state?: numbe
   )
 }
 
+export function IconControlStep({ size = 16 }: IconProps) {
+  return baseSvg(
+    <>
+      <path d="M3 17h18" />
+      <path d="M6 17V9h8" />
+      <path d="M14 9h4" />
+    </>,
+    size,
+  )
+}
+
+export function IconControlConstant({ size = 16 }: IconProps) {
+  return baseSvg(
+    <>
+      <path d="M4 12h16" />
+      <path d="M4 8v8" />
+      <path d="M20 8v8" />
+    </>,
+    size,
+  )
+}
+
+export function IconControlSum({ size = 16 }: IconProps) {
+  return baseSvg(
+    <>
+      <circle cx="12" cy="12" r="7" />
+      <path d="M9 12h6" />
+      <path d="M12 9v6" />
+      <path d="M3 8h3" />
+      <path d="M3 16h3" />
+      <path d="M18 12h3" />
+    </>,
+    size,
+  )
+}
+
+export function IconControlGain({ size = 16 }: IconProps) {
+  return baseSvg(
+    <>
+      <path d="M4 12h5" />
+      <path d="M15 12h5" />
+      <path d="M9 7l6 5-6 5z" />
+    </>,
+    size,
+  )
+}
+
+export function IconControlIntegrator({ size = 16 }: IconProps) {
+  return baseSvg(
+    <>
+      <rect x="6" y="6" width="12" height="12" rx="2" />
+      <path d="M9 12h6" />
+      <path d="M3 12h3" />
+      <path d="M18 12h3" />
+    </>,
+    size,
+  )
+}
+
+export function IconControlPlant1st({ size = 16 }: IconProps) {
+  return baseSvg(
+    <>
+      <rect x="5" y="7" width="14" height="10" rx="2" />
+      <path d="M3 12h2" />
+      <path d="M19 12h2" />
+      <path d="M8 12h8" />
+      <path d="M12 9v6" />
+    </>,
+    size,
+  )
+}
+
+export function IconControlPID({ size = 16 }: IconProps) {
+  return baseSvg(
+    <>
+      <rect x="4" y="6" width="16" height="12" rx="2" />
+      <path d="M7 10h2" />
+      <path d="M11 10h2" />
+      <path d="M15 10h2" />
+      <path d="M7 14h10" />
+    </>,
+    size,
+  )
+}
+
+export function IconControlScope({ size = 16 }: IconProps) {
+  return baseSvg(
+    <>
+      <rect x="4" y="5" width="16" height="14" rx="2" />
+      <path d="M7 14l2-3 2 2 2-4 2 5" />
+    </>,
+    size,
+  )
+}
+
 export function ComponentIcon({ type, size = 16, parameters }: { type: CircuitComponentType; size?: number; parameters?: Record<string, number> }) {
   switch (type) {
+    case 'control_step':
+      return <IconControlStep size={size} />
+    case 'control_constant':
+      return <IconControlConstant size={size} />
+    case 'control_sum':
+      return <IconControlSum size={size} />
+    case 'control_gain':
+      return <IconControlGain size={size} />
+    case 'control_integrator':
+      return <IconControlIntegrator size={size} />
+    case 'control_plant_1st':
+      return <IconControlPlant1st size={size} />
+    case 'control_pid':
+      return <IconControlPID size={size} />
+    case 'control_scope':
+      return <IconControlScope size={size} />
     case 'switch':
       return <IconSwitch size={size} state={parameters?.state} />
     case 'resistor':

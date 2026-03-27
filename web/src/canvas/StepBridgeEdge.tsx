@@ -83,7 +83,6 @@ export const StepBridgeEdge = memo((props: EdgeProps) => {
       }
     }
     return points
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, allEdges, sourceX, sourceY, targetX, targetY])
 
   const baseStroke = (style && (style as React.CSSProperties).stroke) || '#94a3b8'

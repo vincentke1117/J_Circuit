@@ -2,7 +2,7 @@ import Plot from 'react-plotly.js'
 import { useState, useRef, useEffect, useCallback } from 'react'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
-import { X, FileJson, FileSpreadsheet, FileText, Activity, Maximize2, Move } from 'lucide-react'
+import { X, FileJson, FileSpreadsheet, FileText, Activity, Layout, Move } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { MatrixDisplay, VectorDisplay } from '@/components/MatrixDisplay'
 import type { SimulationData, AnalysisResultData, NodeVoltageResult, TheveninResult, BranchCurrentResult } from '@/types/circuit'
@@ -15,13 +15,36 @@ export interface SimulationResultPanelProps {
   onClose?: () => void
 }
 
+interface TeachingMatrices {
+  step2?: {
+    G: number[][]
+    I: number[]
+    nodes: string[]
+  }
+  step6?: {
+    V: number[]
+    nodes: string[]
+  }
+}
+
+interface TeachingResult {
+  steps?: string[]
+  matrices?: TeachingMatrices
+}
+
+type ComparisonResults = Record<string, AnalysisResultData | null>
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null
+}
+
 export function SimulationResultPanel({ result, error, isRunning, method, onClose }: SimulationResultPanelProps) {
   // 检测是否是对比模式的结果
   const isComparisonMode = !!(result && 
     typeof result === 'object' && 
     Object.keys(result).length > 0 &&
     Object.keys(result).every(k => ['node_voltage', 'branch_current', 'mesh_current', 'thevenin'].includes(k)))
-  const comparisonResults = isComparisonMode ? result as Record<string, any> : null
+  const comparisonResults = isComparisonMode ? result as ComparisonResults : null
   
   // 检测结果类型
   const isTransientResult = result && 'time' in result && 'signals' in result
@@ -30,6 +53,7 @@ export function SimulationResultPanel({ result, error, isRunning, method, onClos
   const isNodeVoltageResult = method === 'node_voltage' && result && 'node_voltages' in result
   const isTheveninResult = result && 'vth' in result && 'rth' in result
   const hasSignals = Boolean(isTransientResult && (result as SimulationData).signals.length > 0)
+  const teachingResult = isRecord(result) ? result as TeachingResult : null
 
   const [showBranch, setShowBranch] = useState(true)
   const [showNode, setShowNode] = useState(true)
@@ -344,6 +368,11 @@ export function SimulationResultPanel({ result, error, isRunning, method, onClos
                   'mesh_current': '网孔电流法',
                   'thevenin': '戴维南等效'
                 }
+                const methodTeaching = isRecord(methodResult) ? methodResult as TeachingResult : null
+                const methodNodeVoltages =
+                  methodResult && isRecord(methodResult) && 'node_voltages' in methodResult
+                    ? (methodResult as NodeVoltageResult).node_voltages
+                    : null
                 
                 return (
                   <div key={methodKey} className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
@@ -366,11 +395,11 @@ export function SimulationResultPanel({ result, error, isRunning, method, onClos
                       </div>
                     ) : (
                       <div className="space-y-4">
-                        {(methodResult as any).steps && (methodResult as any).steps.length > 0 && (
+                        {methodTeaching?.steps && methodTeaching.steps.length > 0 && (
                           <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
                             <h6 className="text-[10px] font-bold text-amber-500 uppercase mb-2">步骤</h6>
                             <ol className="text-[10px] text-amber-200/80 list-decimal pl-4 space-y-1">
-                              {(methodResult as any).steps.map((step: string, i: number) => (
+                              {methodTeaching.steps.map((step, i) => (
                                 <li key={i}>{step}</li>
                               ))}
                             </ol>
@@ -381,10 +410,10 @@ export function SimulationResultPanel({ result, error, isRunning, method, onClos
                         <div>
                           <h5 className="text-xs font-semibold text-slate-400 mb-2">节点电压</h5>
                           <div className="space-y-1">
-                            {Object.entries((methodResult.node_voltages as Record<string, number>)).slice(0, 5).map(([node, voltage]) => (
+                            {Object.entries(methodNodeVoltages ?? {}).slice(0, 5).map(([node, voltage]) => (
                               <div key={node} className="flex justify-between text-xs border-b border-slate-700/30 pb-1 last:border-0">
                                 <span className="text-slate-500">{node}</span>
-                                <span className="font-mono text-slate-300">{(voltage as number).toFixed(4)}</span>
+                                <span className="font-mono text-slate-300">{voltage.toFixed(4)}</span>
                               </div>
                             ))}
                           </div>
@@ -446,37 +475,37 @@ export function SimulationResultPanel({ result, error, isRunning, method, onClos
               </label>
             </div>
             
-            {(result as any).steps && (result as any).steps.length > 0 && (
+            {teachingResult?.steps && teachingResult.steps.length > 0 && (
               <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
                 <h4 className="text-sm font-semibold text-slate-300 mb-3">求解步骤</h4>
                 <ol className="list-decimal pl-5 space-y-2 text-sm text-slate-400">
-                  {(result as any).steps.map((step: string, i: number) => (
+                  {teachingResult.steps.map((step, i) => (
                     <li key={i}>{step}</li>
                   ))}
                 </ol>
                 
-                {(result as any).matrices && (
+                {teachingResult.matrices && (
                    <div className="mt-6 space-y-4">
-                    {(result as any).matrices.step2 && (
+                    {teachingResult.matrices.step2 && (
                       <div>
                         <MatrixDisplay
                           label="G 矩阵"
-                          data={(result as any).matrices.step2.G}
-                          rowLabels={(result as any).matrices.step2.nodes}
-                          columnLabels={(result as any).matrices.step2.nodes}
+                          data={teachingResult.matrices.step2.G}
+                          rowLabels={teachingResult.matrices.step2.nodes}
+                          columnLabels={teachingResult.matrices.step2.nodes}
                         />
                         <VectorDisplay
                           label="I 向量"
-                          data={(result as any).matrices.step2.I}
-                          labels={(result as any).matrices.step2.nodes}
+                          data={teachingResult.matrices.step2.I}
+                          labels={teachingResult.matrices.step2.nodes}
                         />
                       </div>
                     )}
-                    {(result as any).matrices.step6 && (
+                    {teachingResult.matrices.step6 && (
                       <VectorDisplay
                         label="V 求解结果"
-                        data={(result as any).matrices.step6.V}
-                        labels={(result as any).matrices.step6.nodes}
+                        data={teachingResult.matrices.step6.V}
+                        labels={teachingResult.matrices.step6.nodes}
                       />
                     )}
                    </div>

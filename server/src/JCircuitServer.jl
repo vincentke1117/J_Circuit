@@ -15,13 +15,15 @@ const EPS_RESISTANCE = 1e-9
 const _SIMPLIFY_CACHE = Dict{String, Any}()
 const _METRICS = Dict{String, Int}("simulate_calls" => 0, "simplify_hits" => 0, "simplify_misses" => 0)
 
-export bootstrap, run_simulation, SimulationPayload, ComponentPayload, NetPayload, SimulationSettings
+export bootstrap, run_simulation, SimulationPayload, ComponentPayload, NetPayload, SimulationSettings, ControlBlockPayload, ControlEdgePayload, ControlOutputPayload, ControlSimulationPayload
 
 struct SimulationSettings
     t_stop::Float64
     n_samples::Int
 end
 StructTypes.StructType(::Type{SimulationSettings}) = StructTypes.Struct()
+
+include("ControlPayloads.jl")
 
 struct ComponentPayload
     id::String
@@ -48,11 +50,26 @@ end
 StructTypes.StructType(::Type{SimulationPayload}) = StructTypes.Struct()
 StructTypes.omitempties(::Type{SimulationPayload}) = (:method, :thevenin_port, :teaching_mode)
 
+SimulationPayload(
+    components::Vector{ComponentPayload},
+    nets::Vector{NetPayload},
+    sim::SimulationSettings,
+) = SimulationPayload(components, nets, sim, nothing, nothing, nothing)
+
+SimulationPayload(
+    components::Vector{ComponentPayload},
+    nets::Vector{NetPayload},
+    sim::SimulationSettings,
+    method::Union{String, Nothing},
+) = SimulationPayload(components, nets, sim, method, nothing, nothing)
+
 struct ValidationError <: Exception
     message::String
     data::Dict{String, Any}
 end
 Base.showerror(io::IO, err::ValidationError) = print(io, err.message)
+
+include("ControlSimulation.jl")
 
 const COMPONENT_SCHEMAS = Dict(
     "resistor" => (; handles = ["p", "n"], params = ["value"]),
@@ -1688,9 +1705,34 @@ function run_simulation(payload::SimulationPayload)
     end
 end
 
+function extract_payload_kind(raw_body::String)
+    parsed = JSON3.read(raw_body)
+    if haskey(parsed, :kind) || haskey(parsed, "kind")
+        kind = haskey(parsed, :kind) ? parsed[:kind] : parsed["kind"]
+        kind === nothing && return "circuit"
+        return String(kind)
+    end
+    return "circuit"
+end
+
 function handle_simulate(req::HTTP.Request)
-    payload = JSON3.read(String(req.body), SimulationPayload)
-    response = run_simulation(payload)
+    raw_body = String(req.body)
+    kind = extract_payload_kind(raw_body)
+
+    response = if kind == "control"
+        payload = JSON3.read(raw_body, ControlSimulationPayload)
+        run_simulation(payload)
+    elseif kind == "circuit" || isempty(kind)
+        payload = JSON3.read(raw_body, SimulationPayload)
+        run_simulation(payload)
+    else
+        Dict(
+            "status" => "error",
+            "message" => "不支持的仿真类型: $(kind)",
+            "data" => Dict("kind" => kind),
+        )
+    end
+
     return HTTP.Response(200, collect(RESPONSE_HEADERS), JSON3.write(response))
 end
 

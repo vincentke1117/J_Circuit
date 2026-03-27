@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import type { DragEvent } from 'react'
-import { Search, Grid, List } from 'lucide-react'
+import { Search, Grid } from 'lucide-react'
 
 import { DND_COMPONENT_MIME, type CircuitComponentDefinition } from '@/circuit/components'
 import { ComponentIcon } from '@/circuit/icons'
