@@ -32,14 +32,36 @@ function hashPayload(payload: SimulationRequestPayload): string {
         outputs: payload.outputs,
         sim: payload.sim,
       })
-    : JSON.stringify({
-        kind: payload.kind ?? 'circuit',
-        components: payload.components.map(c => ({ id: c.id, type: c.type, params: c.parameters, conn: c.connections })),
-        nets: payload.nets,
-        sim: payload.sim,
-        method: payload.method,
-        thevenin_port: payload.thevenin_port,
-      })
+    : payload.kind === 'mixed'
+      ? JSON.stringify({
+          kind: payload.kind,
+          blocks: payload.blocks.map((block) => ({
+            id: block.id,
+            type: block.type,
+            params: block.parameters,
+          })),
+          edges: payload.edges,
+          outputs: payload.outputs,
+          bridges: payload.bridges,
+          circuit: {
+            components: payload.circuit.components.map((component) => ({
+              id: component.id,
+              type: component.type,
+              params: component.parameters,
+              conn: component.connections,
+            })),
+            nets: payload.circuit.nets,
+          },
+          sim: payload.sim,
+        })
+      : JSON.stringify({
+          kind: payload.kind ?? 'circuit',
+          components: payload.components.map(c => ({ id: c.id, type: c.type, params: c.parameters, conn: c.connections })),
+          nets: payload.nets,
+          sim: payload.sim,
+          method: payload.method,
+          thevenin_port: payload.thevenin_port,
+        })
   let h = 0
   for (let i = 0; i < key.length; i++) h = Math.imul(31, h) + key.charCodeAt(i) | 0
   return String(h)

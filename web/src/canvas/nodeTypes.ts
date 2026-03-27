@@ -26,4 +26,8 @@ export const circuitNodeTypes: NodeTypes = {
   control_plant_1st: CircuitNode,
   control_pid: CircuitNode,
   control_scope: CircuitNode,
+  voltage_sensor: CircuitNode,
+  current_sensor: CircuitNode,
+  controlled_voltage_source: CircuitNode,
+  controlled_current_source: CircuitNode,
 }

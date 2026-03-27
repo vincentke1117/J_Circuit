@@ -312,6 +312,54 @@ export function IconControlScope({ size = 16 }: IconProps) {
   )
 }
 
+export function IconVoltageSensor({ size = 16 }: IconProps) {
+  return baseSvg(
+    <>
+      <circle cx="12" cy="12" r="7" />
+      <path d="M12 5v14" />
+      <path d="M9 8h6" />
+      <path d="M9 16h6" />
+    </>,
+    size,
+  )
+}
+
+export function IconCurrentSensor({ size = 16 }: IconProps) {
+  return baseSvg(
+    <>
+      <circle cx="12" cy="12" r="7" />
+      <path d="M8 12h8" />
+      <path d="M14 10l2 2-2 2" />
+    </>,
+    size,
+  )
+}
+
+export function IconControlledVoltageSource({ size = 16 }: IconProps) {
+  return baseSvg(
+    <>
+      <circle cx="12" cy="12" r="7" />
+      <path d="M9 12h6" />
+      <path d="M12 9v6" />
+      <path d="M4 6l4 2" />
+    </>,
+    size,
+  )
+}
+
+export function IconControlledCurrentSource({ size = 16 }: IconProps) {
+  return baseSvg(
+    <>
+      <circle cx="12" cy="12" r="7" />
+      <path d="M12 8v8" />
+      <path d="M12 16l-2-2" />
+      <path d="M12 16l2-2" />
+      <path d="M4 6l4 2" />
+    </>,
+    size,
+  )
+}
+
 export function ComponentIcon({ type, size = 16, parameters }: { type: CircuitComponentType; size?: number; parameters?: Record<string, number> }) {
   switch (type) {
     case 'control_step':
@@ -330,6 +378,14 @@ export function ComponentIcon({ type, size = 16, parameters }: { type: CircuitCo
       return <IconControlPID size={size} />
     case 'control_scope':
       return <IconControlScope size={size} />
+    case 'voltage_sensor':
+      return <IconVoltageSensor size={size} />
+    case 'current_sensor':
+      return <IconCurrentSensor size={size} />
+    case 'controlled_voltage_source':
+      return <IconControlledVoltageSource size={size} />
+    case 'controlled_current_source':
+      return <IconControlledCurrentSource size={size} />
     case 'switch':
       return <IconSwitch size={size} state={parameters?.state} />
     case 'resistor':

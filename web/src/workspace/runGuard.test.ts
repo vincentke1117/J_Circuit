@@ -8,9 +8,9 @@ describe('isRunDisabled', () => {
     expect(isRunDisabled('empty', true)).toBe(true)
   })
 
-  it('disables run for mixed diagrams', () => {
+  it('requires ground for mixed diagrams', () => {
     expect(isRunDisabled('mixed', false)).toBe(true)
-    expect(isRunDisabled('mixed', true)).toBe(true)
+    expect(isRunDisabled('mixed', true)).toBe(false)
   })
 
   it('requires ground only for electrical diagrams', () => {

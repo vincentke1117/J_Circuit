@@ -106,18 +106,18 @@ export function EditorTopBar({
   }
 
   // 根据电路类型可用的分析方法
-  const availableMethods: AnalysisMethod[] = diagramMode === 'control'
+  const availableMethods: AnalysisMethod[] = diagramMode === 'control' || diagramMode === 'mixed'
     ? ['transient']
     : isResistive
       ? ['node_voltage', 'branch_current', 'mesh_current', 'thevenin', 'transient', 'transient_modia']
       : ['transient', 'transient_modia']
   
-  const currentMethod: AnalysisMethod = diagramMode === 'control'
+  const currentMethod: AnalysisMethod = diagramMode === 'control' || diagramMode === 'mixed'
     ? 'transient'
     : settings.method ?? 'transient'
   const isTransient = currentMethod === 'transient' || currentMethod === 'transient_modia'
-  const showTheveninConfig = diagramMode !== 'control' && currentMethod === 'thevenin'
-  const showTeachingMode = diagramMode !== 'control' && isResistive && (currentMethod !== 'thevenin' && currentMethod !== 'transient' || (settings.comparisonMethods?.length ?? 0) > 0)
+  const showTheveninConfig = diagramMode === 'electrical' && currentMethod === 'thevenin'
+  const showTeachingMode = diagramMode === 'electrical' && isResistive && (currentMethod !== 'thevenin' && currentMethod !== 'transient' || (settings.comparisonMethods?.length ?? 0) > 0)
 
   return (
     <header className="min-h-14 h-auto py-2 bg-slate-900 border-b border-slate-800 flex flex-wrap items-center justify-between px-4 shrink-0 z-10 gap-y-2">

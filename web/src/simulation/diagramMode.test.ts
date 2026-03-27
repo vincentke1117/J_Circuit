@@ -41,4 +41,12 @@ describe('detectDiagramMode', () => {
     ])
     expect(mode).toBe('mixed')
   })
+
+  it('returns mixed when bridge components are present', () => {
+    const mode = detectDiagramMode([
+      createNode('VSEN1', 'voltage_sensor'),
+      createNode('R1', 'resistor'),
+    ])
+    expect(mode).toBe('mixed')
+  })
 })

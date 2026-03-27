@@ -66,3 +66,4 @@ end
 end
 
 include("control_simulation.jl")
+include("mixed_simulation.jl")

@@ -8,11 +8,25 @@ export type ControlComponentType =
   | 'control_pid'
   | 'control_scope'
 
+export type BridgeComponentType =
+  | 'voltage_sensor'
+  | 'current_sensor'
+  | 'controlled_voltage_source'
+  | 'controlled_current_source'
+
+export type SignalBlockType = ControlComponentType | BridgeComponentType
+
 export type DiagramMode = 'empty' | 'electrical' | 'control' | 'mixed'
 
 export interface ControlBlockPayload {
   id: string
   type: ControlComponentType
+  parameters: Record<string, number>
+}
+
+export interface MixedBlockPayload {
+  id: string
+  type: SignalBlockType
   parameters: Record<string, number>
 }
 
@@ -51,6 +65,13 @@ export const CONTROL_COMPONENT_TYPES: readonly ControlComponentType[] = [
   'control_plant_1st',
   'control_pid',
   'control_scope',
+]
+
+export const BRIDGE_COMPONENT_TYPES: readonly BridgeComponentType[] = [
+  'voltage_sensor',
+  'current_sensor',
+  'controlled_voltage_source',
+  'controlled_current_source',
 ]
 
 export const CONTROL_DYNAMIC_COMPONENT_TYPES = new Set<ControlComponentType>([

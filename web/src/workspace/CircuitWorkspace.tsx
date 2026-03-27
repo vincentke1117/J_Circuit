@@ -43,6 +43,7 @@ import { circuitNodeTypes } from '@/canvas/nodeTypes'
 import { StepBridgeEdge } from '@/canvas/StepBridgeEdge'
 import { buildSimulationPayload, isResistiveCircuit } from '@/simulation/payload'
 import { buildControlSimulationPayload } from '@/simulation/controlPayload'
+import { buildMixedSimulationPayload } from '@/simulation/mixedPayload'
 import { detectDiagramMode } from '@/simulation/diagramMode'
 import { runSimulationRequest } from '@/simulation/api'
 import { buildProjectSnapshot, loadProjectFromObject } from './project'
@@ -505,8 +506,25 @@ function CircuitWorkspaceInner() {
       }
 
       if (currentDiagramMode === 'mixed') {
-        setSimulationResult(null)
-        setSimulationError('当前画布包含电路元件和控制元件，Phase 1 暂不支持混合仿真')
+        const buildMixed = buildMixedSimulationPayload(currentNodes, currentEdges, simulationSettings)
+        if (!buildMixed.ok || !buildMixed.payload) {
+          setSimulationResult(null)
+          setSimulationError(buildMixed.errors.join('；'))
+          return
+        }
+
+        const response = await runSimulationRequest(buildMixed.payload)
+        if (response.status === 'ok') {
+          setSimulationResult(response.data)
+          setSimulationError(null)
+          setSimulationResultCache(null)
+          setLastMethodUsed('transient')
+          setShowResultPanel(true)
+        } else {
+          const detail = response.data ? `（详情：${JSON.stringify(response.data)}）` : ''
+          setSimulationResult(null)
+          setSimulationError(`${response.message}${detail}`)
+        }
         return
       }
 

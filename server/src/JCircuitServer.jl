@@ -15,7 +15,7 @@ const EPS_RESISTANCE = 1e-9
 const _SIMPLIFY_CACHE = Dict{String, Any}()
 const _METRICS = Dict{String, Int}("simulate_calls" => 0, "simplify_hits" => 0, "simplify_misses" => 0)
 
-export bootstrap, run_simulation, SimulationPayload, ComponentPayload, NetPayload, SimulationSettings, ControlBlockPayload, ControlEdgePayload, ControlOutputPayload, ControlSimulationPayload
+export bootstrap, run_simulation, SimulationPayload, ComponentPayload, NetPayload, SimulationSettings, ControlBlockPayload, ControlEdgePayload, ControlOutputPayload, ControlSimulationPayload, MixedBridgeBindingPayload, MixedCircuitPayload, MixedSimulationPayload
 
 struct SimulationSettings
     t_stop::Float64
@@ -63,6 +63,8 @@ SimulationPayload(
     method::Union{String, Nothing},
 ) = SimulationPayload(components, nets, sim, method, nothing, nothing)
 
+include("MixedPayloads.jl")
+
 struct ValidationError <: Exception
     message::String
     data::Dict{String, Any}
@@ -70,6 +72,7 @@ end
 Base.showerror(io::IO, err::ValidationError) = print(io, err.message)
 
 include("ControlSimulation.jl")
+include("MixedSimulation.jl")
 
 const COMPONENT_SCHEMAS = Dict(
     "resistor" => (; handles = ["p", "n"], params = ["value"]),
@@ -1721,6 +1724,9 @@ function handle_simulate(req::HTTP.Request)
 
     response = if kind == "control"
         payload = JSON3.read(raw_body, ControlSimulationPayload)
+        run_simulation(payload)
+    elseif kind == "mixed"
+        payload = JSON3.read(raw_body, MixedSimulationPayload)
         run_simulation(payload)
     elseif kind == "circuit" || isempty(kind)
         payload = JSON3.read(raw_body, SimulationPayload)

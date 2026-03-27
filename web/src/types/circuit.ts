@@ -1,5 +1,5 @@
 import type { CircuitComponentType } from '@/circuit/components'
-import type { ControlSimulationPayload } from '@/types/control'
+import type { ControlOutputPayload, ControlSimulationPayload, MixedBlockPayload } from '@/types/control'
 
 // 分析方法枚举
 export type AnalysisMethod = 
@@ -90,7 +90,35 @@ export interface SimulationPayload {
   teaching_mode?: boolean  // 教学模式
 }
 
-export type SimulationRequestPayload = SimulationPayload | ControlSimulationPayload
+export interface MixedBridgeBindingPayload {
+  blockId: string
+  positiveNet: string
+  negativeNet: string
+}
+
+export interface MixedSimulationPayload {
+  kind: 'mixed'
+  blocks: MixedBlockPayload[]
+  edges: {
+    id: string
+    source: string
+    target: string
+    sourceHandle: string
+    targetHandle: string
+  }[]
+  outputs: ControlOutputPayload[]
+  bridges: MixedBridgeBindingPayload[]
+  circuit: {
+    components: SimulationComponentPayload[]
+    nets: SimulationNetPayload[]
+  }
+  sim: {
+    t_stop: number
+    n_samples: number
+  }
+}
+
+export type SimulationRequestPayload = SimulationPayload | ControlSimulationPayload | MixedSimulationPayload
 
 export interface SimulationSignal {
   id: string

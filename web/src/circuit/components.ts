@@ -1,6 +1,6 @@
 import { Position } from '@xyflow/react'
 
-import type { ControlComponentType } from '@/types/control'
+import type { BridgeComponentType, ControlComponentType } from '@/types/control'
 import { controlComponentLibrary } from './controlComponents'
 import type { CircuitComponentDefinition } from './componentSchema'
 
@@ -23,7 +23,7 @@ export type ElectricalComponentType =
   | 'current_probe'
   | 'switch'
 
-export type CircuitComponentType = ElectricalComponentType | ControlComponentType
+export type CircuitComponentType = ElectricalComponentType | ControlComponentType | BridgeComponentType
 
 export type { CircuitComponentDefinition, CircuitComponentHandle, CircuitComponentParameter } from './componentSchema'
 
@@ -238,9 +238,65 @@ const electricalComponentLibrary: Record<ElectricalComponentType, CircuitCompone
   },
 }
 
+const bridgeComponentLibrary: Record<BridgeComponentType, CircuitComponentDefinition<BridgeComponentType>> = {
+  voltage_sensor: {
+    type: 'voltage_sensor',
+    label: '电压传感器',
+    prefix: 'VSEN',
+    accent: '#14b8a6',
+    description: '采样电路两节点电压差，并输出信号到控制图。',
+    handles: [
+      { id: 'p', position: Position.Left, label: '+', hint: '被测正端电节点' },
+      { id: 'n', position: Position.Bottom, label: '-', hint: '被测负端电节点（通常接地）' },
+      { id: 'out', position: Position.Right, label: 'out', hint: '控制信号输出' },
+    ],
+    parameters: [],
+  },
+  current_sensor: {
+    type: 'current_sensor',
+    label: '电流传感器',
+    prefix: 'ISEN',
+    accent: '#06b6d4',
+    description: '采样支路电流，并输出信号到控制图。',
+    handles: [
+      { id: 'p', position: Position.Left, label: 'p', hint: '被测支路输入端' },
+      { id: 'n', position: Position.Right, label: 'n', hint: '被测支路输出端' },
+      { id: 'out', position: Position.Top, label: 'out', hint: '控制信号输出' },
+    ],
+    parameters: [],
+  },
+  controlled_voltage_source: {
+    type: 'controlled_voltage_source',
+    label: '受控电压源',
+    prefix: 'CVS',
+    accent: '#22c55e',
+    description: '由控制信号驱动的电压源（u→V）。',
+    handles: [
+      { id: 'pos', position: Position.Left, label: '+', hint: '输出正端' },
+      { id: 'neg', position: Position.Right, label: '-', hint: '输出负端' },
+      { id: 'in', position: Position.Top, label: 'in', hint: '控制信号输入' },
+    ],
+    parameters: [{ key: 'gain', label: '增益', unit: 'V/u', defaultValue: 1, description: '输出电压 = gain × 控制输入。' }],
+  },
+  controlled_current_source: {
+    type: 'controlled_current_source',
+    label: '受控电流源',
+    prefix: 'CCS',
+    accent: '#84cc16',
+    description: '由控制信号驱动的电流源（u→I）。',
+    handles: [
+      { id: 'pos', position: Position.Left, label: '+', hint: '输出正端（电流方向 pos→neg）' },
+      { id: 'neg', position: Position.Right, label: '-', hint: '输出负端' },
+      { id: 'in', position: Position.Top, label: 'in', hint: '控制信号输入' },
+    ],
+    parameters: [{ key: 'gain', label: '增益', unit: 'A/u', defaultValue: 1, description: '输出电流 = gain × 控制输入。' }],
+  },
+}
+
 export const circuitComponentLibrary: Record<CircuitComponentType, CircuitComponentDefinition<CircuitComponentType>> = {
   ...electricalComponentLibrary,
   ...controlComponentLibrary,
+  ...bridgeComponentLibrary,
 }
 
 export const circuitComponentList = Object.values(circuitComponentLibrary)
