@@ -1,5 +1,14 @@
 # J-Circuit
 
+> **⚠️ ARCHIVED（2026-07-11 归档，只读）**
+>
+> 本仓库已停止开发。全部代码已演进合入 **simulearn** monorepo：
+> - `web/` → `simulearn/packages/lab-web`（含类型加强与拖拽修复）
+> - `server/` → `simulearn/packages/lab-backend`（`JCircuitServer.jl` 逐字节等同，且该侧带 Manifest.toml 锁定）
+>
+> 归档前已核验：文件树 61↔61 对齐、关键文件（JCircuitServer.jl / mixedPayload / controlPayload / CircuitWorkspace）内容级抽查，simulearn 侧严格包含本仓库 HEAD（分支 codex/control-sim-backend）全部功能，含控制系统 Phase1 与混合仿真 Phase2。
+> **请勿在此仓库继续修改**——一切开发在 simulearn 进行。
+
 J-Circuit 是一个基于 React 与 Julia 的交互式电路仿真平台。根据 [v1.2 PRD](./task.md) 的要求，本仓库拆分为前端 `web/` 与后端 `server/` 两个子工程，分别负责电路绘制/交互以及仿真求解。
 
 ## 核心特性
